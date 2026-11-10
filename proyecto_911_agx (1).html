@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#080b10">
+<title>Proyecto 911 | AGX</title>
+<style>
+:root{color-scheme:dark;--bg:#080b10;--panel:#111720;--muted:#9aa7b7;--green:#70f0a2;--line:#263241}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 80% 0%,#173426 0,transparent 36%),var(--bg);color:#f4f7fb;font:16px system-ui,-apple-system,Segoe UI,sans-serif}
+main{max-width:520px;margin:auto;padding:22px 17px 40px}.tag{color:var(--green);font-size:12px;letter-spacing:2px;font-weight:800}
+h1{font-size:29px;line-height:1.08;margin:8px 0 5px}.sub{color:var(--muted);margin:0 0 20px;font-size:14px}
+.hero{border:1px solid #314238;border-radius:22px;overflow:hidden;background:linear-gradient(145deg,#16231d,#111720 65%);padding:18px}
+.car{height:130px;border-radius:15px;background:linear-gradient(0deg,rgba(8,11,16,.35),rgba(8,11,16,.05)),url('https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=1000&q=85') center 56%/cover;margin-bottom:17px}
+.label{font-size:12px;color:var(--muted);letter-spacing:.8px}.price{font-size:clamp(28px,8vw,38px);font-weight:850;letter-spacing:-1px;margin:3px 0 12px}
+.track{height:13px;border-radius:30px;background:#26332e;overflow:hidden}.fill{height:100%;width:0%;background:linear-gradient(90deg,#39c878,#a5ffc3);border-radius:30px;transition:width .3s}
+.row{display:flex;justify-content:space-between;gap:10px;margin-top:9px;font-size:13px}.muted{color:var(--muted)}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:13px 0}.stat,.edit{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:14px}.stat strong{display:block;font-size:21px;margin-top:4px}
+h2{font-size:17px;margin:22px 0 10px}.edit p{font-size:13px;color:var(--muted);margin:0 0 12px}
+label{display:block;font-size:13px;color:#c5d0dc;margin:12px 0 6px}
+input{width:100%;border:1px solid #344252;border-radius:11px;background:#090e14;color:#fff;padding:12px;font-size:16px}
+button{width:100%;border:0;border-radius:12px;padding:13px;background:var(--green);color:#07110b;font-size:15px;font-weight:800;margin-top:14px}
+.note{font-size:12px;line-height:1.5;color:var(--muted);margin-top:15px}
+footer{text-align:center;color:#718092;font-size:11px;margin-top:22px;letter-spacing:1px}
+</style>
+</head>
+<body>
+<main>
+  <div class="tag">AGX • PROYECTO 911</div>
+  <h1>Un objetivo.<br>Un plan. Mucho trabajo.</h1>
+  <p class="sub">Tu panel personal de progreso hacia el Porsche 911.</p>
+  <section class="hero">
+    <div class="car" role="img" aria-label="Fotografía de un auto deportivo Porsche 911"></div>
+    <div class="label">META DE REFERENCIA · PORSCHE 911 CARRERA</div>
+    <div class="price" id="goalText">$2,628,000 MXN</div>
+    <div class="track"><div class="fill" id="fill"></div></div>
+    <div class="row"><strong id="percent">0.0057%</strong><span class="muted" id="remaining">Faltan $2,627,850</span></div>
+  </section>
+  <div class="stats">
+    <div class="stat"><span class="muted">Capital actual</span><strong id="capitalCard">$150</strong></div>
+    <div class="stat"><span class="muted">Clientes conseguidos</span><strong id="clientsCard">0</strong></div>
+  </div>
+  <h2>Actualizar mi progreso</h2>
+  <section class="edit">
+    <p>Introduce tus cifras actuales. Se guardan en este dispositivo.</p>
+    <label for="capital">Capital disponible (MXN)</label>
+    <input id="capital" type="number" min="0" step="1" value="150">
+    <label for="clients">Clientes conseguidos</label>
+    <input id="clients" type="number" min="0" step="1" value="0">
+    <button id="save">Guardar progreso</button>
+  </section>
+  <p class="note">La barra mide capital disponible frente al precio de referencia del auto; no representa una probabilidad de compra. El precio puede cambiar y no incluye seguro, mantenimiento, impuestos ni otros gastos. Evita endeudarte y pide apoyo de un adulto de confianza para cualquier compra o acuerdo financiero.</p>
+  <footer>AGX CREATIVE · CONSTANCIA SOBRE PRISA</footer>
+</main>
+<script>
+const goal=2628000;
+const money=n=>new Intl.NumberFormat('es-MX',{style:'currency',currency:'MXN',maximumFractionDigits:0}).format(n);
+const cap=document.getElementById('capital'), cli=document.getElementById('clients');
+function render(){
+ let c=Math.max(0,Number(cap.value)||0), n=Math.max(0,Math.floor(Number(cli.value)||0));
+ let pct=c/goal*100;
+ document.getElementById('fill').style.width=Math.min(100,pct)+'%';
+ document.getElementById('percent').textContent=(pct<0.01?pct.toFixed(4):pct.toFixed(2))+'%';
+ document.getElementById('remaining').textContent='Faltan '+money(Math.max(0,goal-c));
+ document.getElementById('capitalCard').textContent=money(c);
+ document.getElementById('clientsCard').textContent=n.toString();
+}
+try{cap.value=localStorage.getItem('agx_capital')??'150';cli.value=localStorage.getItem('agx_clients')??'0';}catch(e){}
+render();
+document.getElementById('save').addEventListener('click',()=>{
+ let c=Math.max(0,Number(cap.value)||0),n=Math.max(0,Math.floor(Number(cli.value)||0));
+ try{localStorage.setItem('agx_capital',String(c));localStorage.setItem('agx_clients',String(n));}catch(e){}
+ cap.value=c;cli.value=n;render();
+ document.getElementById('save').textContent='¡Progreso guardado!';
+ setTimeout(()=>document.getElementById('save').textContent='Guardar progreso',1800);
+});
+</script>
+</body></html>
